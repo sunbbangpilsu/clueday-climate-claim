@@ -12,6 +12,8 @@
     --cold: #7aa2ff; --cold-soft: #1b2744; --ok: #4ade80; --warn: #fbbf24;
     color-scheme: dark;
   }
+  /* 진한 초록 글자 로고를 어두운 배경에서 밝게 */
+  :root:not([data-theme="light"]) .brand-word { filter: invert(1) hue-rotate(180deg); }
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -22,7 +24,9 @@ body {
 }
 .app { max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 84px; }
 .topbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px 8px; }
-.brand { font-weight: 800; font-size: 22px; color: var(--brand); text-decoration: none; letter-spacing: -0.02em; }
+.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.brand-frog { height: 42px; width: auto; }
+.brand-word { height: 24px; width: auto; }
 .region { border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 999px;
   padding: 6px 14px; font: inherit; font-size: 15px; font-weight: 600; }
 main { padding: 8px 20px 24px; outline: none; }

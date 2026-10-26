@@ -3,7 +3,7 @@
   "info": {
     "title": "청구리 API",
     "description": "경기 기후보험 보장 판정·서류 안내 API. 이름·주민번호·진단서 원본은 받지 않습니다.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "paths": {
     "/api/health": {
@@ -246,28 +246,24 @@
             "type": "string",
             "enum": [
               "폭염",
-              "한파"
+              "한파",
+              "기타"
             ],
-            "title": "Weather",
-            "default": "폭염"
+            "title": "Weather"
           },
           "exposure": {
             "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
             "title": "Exposure",
-            "description": "노출 상황",
-            "default": "야외 작업",
-            "examples": [
-              "야외 작업",
-              "난방 없는 실내"
-            ]
+            "description": "사용자가 직접 확인한 노출 상황"
           },
           "hours": {
             "type": "number",
             "maximum": 24.0,
-            "minimum": 0.0,
+            "exclusiveMinimum": 0.0,
             "title": "Hours",
-            "description": "노출 시간",
-            "default": 2
+            "description": "노출 시간"
           },
           "symptoms": {
             "items": {
@@ -297,6 +293,11 @@
           }
         },
         "type": "object",
+        "required": [
+          "weather",
+          "exposure",
+          "hours"
+        ],
         "title": "DoctorCardRequest"
       },
       "EligibilityRequest": {
@@ -392,6 +393,42 @@
             "type": "boolean",
             "title": "Vulnerable",
             "description": "기후취약계층 여부 (방문건강관리사업 대상 또는 임산부)",
+            "default": false
+          },
+          "resident_on_event": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resident On Event",
+            "description": "사고 당일 경기도 가입 대상이었는지 사용자 확인"
+          },
+          "diagnosis_already_paid": {
+            "type": "boolean",
+            "title": "Diagnosis Already Paid",
+            "description": "해당 온열·한랭 진단비의 보험기간 내 기지급 여부",
+            "default": false
+          },
+          "disaster_related": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disaster Related",
+            "description": "사고와 기상현상의 관련 여부 사용자 확인"
+          },
+          "demo_mode": {
+            "type": "boolean",
+            "title": "Demo Mode",
+            "description": "가상 사례 시연 전용. 실제 청구 판단에 사용할 수 없음",
             "default": false
           }
         },

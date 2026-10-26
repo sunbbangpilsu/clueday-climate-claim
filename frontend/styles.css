@@ -1,6 +1,6 @@
 :root {
   --bg: #f4f6f5; --surface: #ffffff; --text: #17201d; --muted: #5d6965; --line: #dfe5e2;
-  --brand: #0f5c4d; --brand-soft: #e3f1ec; --heat: #c2410c; --heat-soft: #fff1e8;
+  --brand: #0f5c4d; --on-brand: #ffffff; --brand-soft: #e3f1ec; --heat: #c2410c; --heat-soft: #fff1e8;
   --cold: #1d4ed8; --cold-soft: #e8efff; --ok: #15803d; --warn: #b45309;
   --radius: 16px;
   color-scheme: light;
@@ -8,7 +8,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0f1412; --surface: #18201d; --text: #e8eeeb; --muted: #9fb0aa; --line: #2b3632;
-    --brand: #5fc4a8; --brand-soft: #173a31; --heat: #fb923c; --heat-soft: #3a2316;
+    --brand: #5fc4a8; --on-brand: #10241c; --brand-soft: #173a31; --heat: #fb923c; --heat-soft: #3a2316;
     --cold: #7aa2ff; --cold-soft: #1b2744; --ok: #4ade80; --warn: #fbbf24;
     color-scheme: dark;
   }
@@ -45,7 +45,7 @@ h2 { font-size: 18px; margin: 22px 0 10px; }
 .alert p { margin: 0; font-weight: 600; }
 .btn { display: block; width: 100%; text-align: center; border: 0; border-radius: 14px; padding: 15px 16px; font: inherit;
   font-weight: 700; font-size: 17px; cursor: pointer; text-decoration: none; }
-.btn.primary { background: var(--brand); color: #fff; }
+.btn.primary { background: var(--brand); color: var(--on-brand); }
 .btn.ghost { background: var(--brand-soft); color: var(--brand); }
 .btn + .btn { margin-top: 10px; }
 .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -62,7 +62,7 @@ input[type="text"], input[type="date"], input[type="number"], select {
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 999px; padding: 8px 14px;
   font: inherit; font-size: 15px; cursor: pointer; }
-.chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+.chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
 .switch { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
 .switch:first-child { border-top: 0; }
 .switch input { width: 22px; height: 22px; accent-color: var(--brand); }
@@ -95,6 +95,20 @@ input[type="text"], input[type="date"], input[type="number"], select {
 .claim-doc td, .claim-doc th { border: 1px solid #999; padding: 6px 8px; text-align: left; vertical-align: top; }
 .claim-doc th { background: #f1f1f1; width: 34%; }
 .error { color: var(--heat); font-weight: 700; }
+.notice { background: var(--brand-soft); border: 1px solid var(--line); border-left: 4px solid var(--brand);
+  border-radius: 12px; padding: 14px; margin: 12px 0; font-size: 15px; }
+.notice p { margin: 6px 0; }
+.notice a { color: var(--brand); font-weight: 700; }
+input:not([type]), input[type="email"], input[type="tel"] { width: 100%; border: 1px solid var(--line);
+  background: var(--surface); color: var(--text); border-radius: 12px; padding: 12px 14px; font: inherit; }
+.card > .btn, form > .btn { margin-top: 14px; }
+details summary { cursor: pointer; font-weight: 700; }
+.switch input { flex-shrink: 0; }
+.btn:disabled { opacity: .6; cursor: wait; }
+:is(button, a, input, select, summary):focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; }
+.claim-doc { overflow-wrap: anywhere; margin-bottom: 14px; }
+.claim-doc p { font-size: 13px; }
+.item .why { overflow-wrap: anywhere; }
 .tabbar { position: fixed; left: 50%; transform: translateX(-50%); bottom: 0; width: 100%; max-width: 480px; display: grid;
   grid-template-columns: repeat(4, 1fr); background: var(--surface); border-top: 1px solid var(--line);
   padding: 6px 0 calc(6px + env(safe-area-inset-bottom)); }
@@ -105,4 +119,6 @@ input[type="text"], input[type="date"], input[type="number"], select {
   .topbar, .tabbar, .no-print { display: none !important; }
   body { background: #fff; }
   .app { padding: 0; }
+  body[data-route="claim"] main > :not(.claim-doc) { display: none !important; }
+  body[data-route="claim"] .claim-doc { border: 0; padding: 0; }
 }

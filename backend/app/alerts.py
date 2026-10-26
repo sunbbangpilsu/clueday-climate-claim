@@ -29,3 +29,17 @@ def alerts_for(sigungu):
         for s, t, a, b in SAMPLE_ALERTS
         if s == sigungu
     ]
+
+
+def lookup_alerts(sigungu, day):
+    """Sample matches are examples, never evidence of real weather or its absence."""
+    matches = alerts_on(sigungu, day) if day else alerts_for(sigungu)
+    return {
+        "sigungu": sigungu,
+        "date": day.isoformat() if day else None,
+        "alerts": matches,
+        "source": "sample",
+        "status": "sample_match" if matches else "unknown",
+        "verified": False,
+        "notice": "기상청 실시간·과거 특보와 연결되지 않은 시연용 데이터입니다. 데이터가 없어도 특보가 없었다는 뜻은 아닙니다.",
+    }

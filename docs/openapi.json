@@ -1,0 +1,459 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "받을권리 API",
+    "description": "경기 기후보험 보장 판정·서류 안내 API. 이름·주민번호·진단서 원본은 받지 않습니다.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": [
+          "시스템"
+        ],
+        "summary": "서버 상태 확인",
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/coverages": {
+      "get": {
+        "tags": [
+          "보장"
+        ],
+        "summary": "2026 경기 기후보험 보장 항목 목록",
+        "operationId": "coverages_api_coverages_get",
+        "parameters": [
+          {
+            "name": "target",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "all",
+                    "vulnerable"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "all=도민 전체, vulnerable=취약계층 특약",
+              "title": "Target"
+            },
+            "description": "all=도민 전체, vulnerable=취약계층 특약"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alerts": {
+      "get": {
+        "tags": [
+          "기상특보"
+        ],
+        "summary": "시군의 기상특보 조회",
+        "operationId": "alerts_api_alerts_get",
+        "parameters": [
+          {
+            "name": "sigungu",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "시군 이름",
+              "default": "부천시",
+              "title": "Sigungu"
+            },
+            "description": "시군 이름"
+          },
+          {
+            "name": "on",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "이 날짜에 발령 중인 특보만 (YYYY-MM-DD)",
+              "title": "On"
+            },
+            "description": "이 날짜에 발령 중인 특보만 (YYYY-MM-DD)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/eligibility": {
+      "post": {
+        "tags": [
+          "판정"
+        ],
+        "summary": "받을 수 있는 보험금과 필요 서류 판정",
+        "operationId": "eligibility_api_eligibility_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EligibilityRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/doctor-card": {
+      "post": {
+        "tags": [
+          "진료 전 안내"
+        ],
+        "summary": "진료 때 의사에게 보여줄 상황 전달 카드",
+        "operationId": "doctor_card_api_doctor_card_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DoctorCardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/claim-channels": {
+      "get": {
+        "tags": [
+          "청구"
+        ],
+        "summary": "보험금 청구 접수 채널 안내",
+        "operationId": "claim_channels_api_claim_channels_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DoctorCardRequest": {
+        "properties": {
+          "weather": {
+            "type": "string",
+            "enum": [
+              "폭염",
+              "한파"
+            ],
+            "title": "Weather",
+            "default": "폭염"
+          },
+          "exposure": {
+            "type": "string",
+            "title": "Exposure",
+            "description": "노출 상황",
+            "default": "야외 작업",
+            "examples": [
+              "야외 작업",
+              "난방 없는 실내"
+            ]
+          },
+          "hours": {
+            "type": "number",
+            "maximum": 24.0,
+            "minimum": 0.0,
+            "title": "Hours",
+            "description": "노출 시간",
+            "default": 2
+          },
+          "symptoms": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Symptoms",
+            "examples": [
+              [
+                "어지러움",
+                "두통",
+                "구역질"
+              ]
+            ]
+          },
+          "alert_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Type",
+            "description": "당일 발령된 특보 (예: 폭염경보)"
+          }
+        },
+        "type": "object",
+        "title": "DoctorCardRequest"
+      },
+      "EligibilityRequest": {
+        "properties": {
+          "event_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Event Date",
+            "description": "진료·사고 날짜",
+            "examples": [
+              "2026-08-05"
+            ]
+          },
+          "sigungu": {
+            "type": "string",
+            "title": "Sigungu",
+            "description": "사고가 난 시군 (기상특보 확인용)",
+            "default": "부천시"
+          },
+          "diagnosis_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Diagnosis Codes",
+            "description": "진단서·소견서의 질병코드",
+            "examples": [
+              [
+                "T67.0"
+              ]
+            ]
+          },
+          "infection": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Infection",
+            "description": "감염병 이름 (뎅기열, 웨스트나일열, 쯔쯔가무시, 라임병, 말라리아, 일본뇌염, 중증열성혈소판감소증후군, 비브리오패혈증, 치쿤구니야, 지카바이러스)"
+          },
+          "er_visit": {
+            "type": "boolean",
+            "title": "Er Visit",
+            "description": "응급실 진료 여부",
+            "default": false
+          },
+          "hospital_days": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Hospital Days",
+            "description": "입원 일수",
+            "default": 0
+          },
+          "clinic_visits_on_alert_days": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Clinic Visits On Alert Days",
+            "description": "기상특보 발령일 통원 횟수 (취약계층)",
+            "default": 0
+          },
+          "disaster_injury_weeks": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Disaster Injury Weeks",
+            "description": "기후재해 사고 진단 주수",
+            "default": 0
+          },
+          "death": {
+            "type": "boolean",
+            "title": "Death",
+            "description": "사망 여부 (유족 청구)",
+            "default": false
+          },
+          "age": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 130.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Age",
+            "description": "나이 (미성년자 서류·사망위로금 판정용)"
+          },
+          "vulnerable": {
+            "type": "boolean",
+            "title": "Vulnerable",
+            "description": "기후취약계층 여부 (방문건강관리사업 대상 또는 임산부)",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_date"
+        ],
+        "title": "EligibilityRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

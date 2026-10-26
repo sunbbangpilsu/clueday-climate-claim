@@ -24,11 +24,17 @@ python -m pip install -r requirements.txt
 python -m uvicorn app.main:app --port 8000
 ```
 
-- 화면: http://localhost:8000/ (시연용 예시 상태: http://localhost:8000/?demo=1#result)
-- API 문서(Swagger): http://localhost:8000/docs
-- 테스트: `backend` 폴더에서 `python -m pytest -q`
+서버를 실행한 뒤, **같은 컴퓨터의 브라우저**에서 아래 주소를 여세요. (내 컴퓨터에서 실행한 서버라 다른 사람은 이 주소로 볼 수 없습니다.)
 
-프론트엔드만 따로 띄울 때는 `frontend` 폴더에서 `python -m http.server 5500` 후 http://localhost:5500 (백엔드는 8000번 포트).
+| 실행 후 열 주소 | 내용 |
+|---|---|
+| `http://localhost:8000/` | 화면 (모바일 웹) |
+| `http://localhost:8000/?demo=1#result` | 시연용 예시 상태 (한파주의보 날, 72세 어머니 사례) |
+| `http://localhost:8000/docs` | API 문서 (Swagger) |
+
+테스트: `backend` 폴더에서 `python -m pytest -q`
+
+프론트엔드만 따로 띄울 때는 `frontend` 폴더에서 `python -m http.server 5500` 실행 후 `http://localhost:5500` 을 여세요 (백엔드는 8000번 포트).
 
 ## 구성
 

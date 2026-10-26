@@ -1,449 +1,325 @@
-<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>청구리 API 명세서</title><style>
-@page { size: A4; margin: 16mm 15mm; }
-body { font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; font-size: 10.2pt; line-height: 1.6; color: #1b1f1d; }
-h1 { font-size: 20pt; color: #0f5c4d; margin: 0 0 4pt; letter-spacing: -0.02em; }
-h2 { font-size: 14pt; color: #0f5c4d; border-bottom: 2px solid #0f5c4d; padding-bottom: 3pt; margin-top: 18pt; }
-h3 { font-size: 11.5pt; margin: 12pt 0 4pt; }
-table { border-collapse: collapse; width: 100%; margin: 6pt 0 10pt; font-size: 9.4pt; page-break-inside: avoid; }
-th, td { border: 1px solid #b9c4bf; padding: 4pt 6pt; vertical-align: top; text-align: left; }
-th { background: #e6f1ed; }
-code { font-family: Consolas, monospace; background: #f1f4f3; padding: 0 3px; border-radius: 3px; font-size: 9pt; }
-pre { background: #f6f8f7; border: 1px solid #dfe5e2; border-radius: 6px; padding: 8pt; font-size: 8.4pt; line-height: 1.45;
-      white-space: pre-wrap; page-break-inside: avoid; }
-pre code { background: none; padding: 0; }
-blockquote { margin: 8pt 0; padding: 6pt 10pt; background: #fff6ec; border-left: 4px solid #c2410c; }
-hr { border: 0; border-top: 1px solid #dfe5e2; margin: 14pt 0; }
-.screens { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6pt; margin: 8pt 0 10pt; page-break-inside: avoid; }
-.screens figure { margin: 0; text-align: center; }
-.screens img { width: 100%; border: 4px solid #1b1f1d; border-radius: 14px; }
-.logo { display: flex; align-items: center; gap: 8pt; margin: 0 0 6pt; }
-.logo-frog { height: 46pt; }
-.logo-word { height: 24pt; }
-.screens figcaption { font-size: 8pt; margin-top: 2pt; }
-.footnote { font-size: 8.4pt; color: #444; }
-.footnote ol { padding-left: 16pt; }
-a { color: #0f5c4d; word-break: break-all; }
-</style></head><body><h1>청구리 API 명세서</h1>
-<p>경기 기후보험 '받을 권리' 청구 도우미의 백엔드 API입니다.</p>
-<table>
-<thead>
-<tr>
-<th>항목</th>
-<th>내용</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Base URL (로컬)</td>
-<td><code>http://localhost:8000</code></td>
-</tr>
-<tr>
-<td>형식</td>
-<td>JSON (UTF-8)</td>
-</tr>
-<tr>
-<td>인증</td>
-<td>1차 버전 없음 (공개 정보·판정만 제공). 기관용 API는 2차에서 토큰 인증 추가</td>
-</tr>
-<tr>
-<td>자동 문서</td>
-<td><code>GET /docs</code> (Swagger UI), <code>GET /openapi.json</code></td>
-</tr>
-<tr>
-<td>구현</td>
-<td>Python 3.14 · FastAPI · 자동 테스트 5개 (<code>backend/tests/test_api.py</code>)</td>
-</tr>
-</tbody>
-</table>
-<h2>개인정보 원칙</h2>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>API 명세서</title><style>
+@page {size:A4; margin:20mm 15mm;}
+body {font-family:'Malgun Gothic',sans-serif; color:#17201d; line-height:1.65; max-width:960px; margin:24px auto; padding:0 16px;}
+h1,h2,h3 {color:#0f5c4d; line-height:1.4;} h1 {font-size:26px;} h2 {font-size:21px;} h3 {font-size:16px;}
+table {border-collapse:collapse; width:100%; margin:12px 0; font-size:14px;} th,td {border:1px solid #d3dfd9; padding:8px; text-align:left; vertical-align:top;} th {background:#e3f1ec;}
+a {color:#0f5c4d; overflow-wrap:anywhere;} pre {white-space:pre-wrap; overflow-wrap:anywhere; padding:14px; background:#f3f6f4; border:1px solid #d3dfd9;}
+.page-break {break-before:page;} .screen {display:flex; gap:24px; align-items:flex-start; margin-top:16px; break-inside:avoid;}
+.screen>img {width:290px; border:1px solid #d3dfd9; border-radius:12px;} .ui-notes {flex:1;} .ui-notes p {margin:6px 0 14px;}.small {font-size:12px;color:#5d6965;}
+@media(max-width:640px){.screen{display:block;}.screen>img{max-width:100%;}}
+@media print {body{margin:0;padding:0;}.screen>img{width:73mm;}.screen{gap:7mm;}}
+</style></head><body><h1>청구리 API 명세서 (v0.2)</h1>
+<p><strong>2026 CLUE DAY 1차 제출 / 한라봉귤흑돼지 / 2026.10.26 / 프로그램 기준 cdc97da</strong></p>
+<p>로컬 기본 주소는 <code>http://localhost:8000</code>입니다. 자동 문서는 <code>/docs</code>, 스키마는 <code>/openapi.json</code>에서 제공합니다. PDF·HTML·Markdown은 같은 원본으로 생성합니다.</p>
+<h2>1. 현재 범위와 엔드포인트</h2>
 <ul>
-<li>서버는 <strong>이름, 주민등록번호, 연락처, 계좌번호, 진단서 원본(사진)을 받지 않습니다.</strong></li>
-<li>판정에 필요한 최소 정보(날짜, 시군, 질병코드, 체크 항목)만 받으며 <strong>저장하지 않습니다.</strong></li>
-<li>청구서에 들어가는 개인정보는 사용자 기기에서만 입력되고, 청구서는 기기에서 PDF로 저장됩니다.</li>
+<li>규칙 기반의 <strong>예상 안내</strong>입니다. 실제 특보·OCR·푸시·기관 API는 개발 예정입니다.</li>
+<li>날짜·시군·질병코드·조건과 입력한 진료 상황은 서버에서 처리하지만 저장하지 않습니다. 이름·계좌·가족·진료 건별 기록은 브라우저에만 보관합니다.</li>
+<li>준비 요약서가 공식 청구서·서명·동의·증빙 준비와 보험사 접수를 대체하지 않습니다.</li>
 </ul>
-<h2>엔드포인트 요약</h2>
 <table>
 <thead>
 <tr>
 <th>메서드</th>
 <th>경로</th>
-<th>설명</th>
-<th>상태</th>
+<th>현재 기능</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>GET</td>
-<td><code>/api/health</code></td>
-<td>서버 상태 확인</td>
-<td>동작</td>
+<td>/api/health</td>
+<td>서비스 상태·버전</td>
 </tr>
 <tr>
 <td>GET</td>
-<td><code>/api/coverages</code></td>
-<td>2026 경기 기후보험 보장 항목 목록</td>
-<td>동작</td>
+<td>/api/coverages</td>
+<td>보장표·감염병 목록·출처</td>
 </tr>
 <tr>
 <td>GET</td>
-<td><code>/api/alerts</code></td>
-<td>시군의 기상특보 조회</td>
-<td>동작 (샘플 데이터)</td>
+<td>/api/alerts</td>
+<td>샘플 특보와 미검증 상태</td>
 </tr>
 <tr>
 <td>POST</td>
-<td><code>/api/eligibility</code></td>
-<td>받을 수 있는 보험금·필요 서류·청구 기한 판정</td>
-<td>동작</td>
-</tr>
-<tr>
-<td>POST</td>
-<td><code>/api/doctor-card</code></td>
-<td>진료 때 의사에게 보여줄 상황 전달 카드 생성</td>
-<td>동작</td>
+<td>/api/doctor-card</td>
+<td>입력한 상황으로 카드 생성</td>
 </tr>
 <tr>
 <td>GET</td>
-<td><code>/api/claim-channels</code></td>
-<td>보험금 청구 접수 채널 안내</td>
-<td>동작</td>
+<td>/api/claim-channels</td>
+<td>2026년 공식 접수 채널 안내</td>
 </tr>
 <tr>
 <td>POST</td>
-<td><code>/api/org/cases</code></td>
-<td>(기관용) 취약계층 청구 진행 현황 등록</td>
-<td>2차 예정</td>
-</tr>
-<tr>
-<td>GET</td>
-<td><code>/api/org/cases</code></td>
-<td>(기관용) 담당 대상자 청구 진행 현황 조회</td>
-<td>2차 예정</td>
-</tr>
-<tr>
-<td>POST</td>
-<td><code>/api/push/subscribe</code></td>
-<td>특보 푸시 알림 구독 (시군 단위, 익명)</td>
-<td>2차 예정</td>
+<td>/api/eligibility</td>
+<td>예상 항목·확인 대기·서류·계산상 기한</td>
 </tr>
 </tbody>
 </table>
-<hr />
-<h2>1. GET /api/health</h2>
-<p>서버 상태를 확인합니다.</p>
-<p><strong>응답 200</strong></p>
-<pre><code class="language-json">{ &quot;status&quot;: &quot;ok&quot;, &quot;service&quot;: &quot;청구리&quot;, &quot;version&quot;: &quot;0.1.0&quot; }
+<h3>GET /api/health</h3>
+<p>필수 쿼리·본문 없음. 응답 200:</p>
+<pre><code class="language-json">{&quot;status&quot;:&quot;ok&quot;, &quot;service&quot;:&quot;청구리&quot;, &quot;version&quot;:&quot;0.2.0&quot;}
 </code></pre>
-<h2>2. GET /api/coverages</h2>
-<p>2026 경기 기후보험(보험기간 2026.4.11 ~ 2027.4.10)의 보장 항목을 돌려줍니다. 출처: 경기도 기후보험 안내 (gg.go.kr/gg_insure)</p>
+<h3>GET /api/coverages</h3>
+<p>선택 쿼리 <code>target</code>: <code>all</code>은 전 도민 항목, <code>vulnerable</code>은 취약계층 전용 항목입니다. 생략하면 전체 항목, 잘못된 값은 422를 반환합니다.</p>
 <table>
 <thead>
 <tr>
-<th>쿼리</th>
-<th>타입</th>
-<th>필수</th>
-<th>설명</th>
+<th>응답 필드</th>
+<th>형식</th>
+<th>의미</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>target</td>
+<td>policy_period</td>
 <td>string</td>
-<td>아니오</td>
-<td><code>all</code> = 도민 전체, <code>vulnerable</code> = 기후취약계층 특약</td>
+<td>적용 보험기간</td>
+</tr>
+<tr>
+<td>items</td>
+<td>object[]</td>
+<td>id, name, target, amount, condition, codes, docs</td>
+</tr>
+<tr>
+<td>infections</td>
+<td>string[]</td>
+<td>입력 화면에서 사용할 감염병 10종</td>
+</tr>
+<tr>
+<td>source</td>
+<td>string</td>
+<td>보장표의 공식 출처 URL</td>
 </tr>
 </tbody>
 </table>
-<p><strong>응답 200 (일부)</strong></p>
+<p>금액은 원 단위 정수입니다. 보장표 목록 자체가 개인의 지급 자격을 확정하지 않습니다.</p>
+<div class="page-break"></div>
+
+<h2>2. 특보·진료 카드·접수 안내</h2>
+<h3>GET /api/alerts</h3>
+<p>쿼리: <code>sigungu</code> (기본 부천시), <code>on</code> (선택, YYYY-MM-DD). 아래는 응답 200의 예입니다.</p>
 <pre><code class="language-json">{
-  &quot;policy_period&quot;: &quot;2026-04-11 ~ 2027-04-10&quot;,
-  &quot;items&quot;: [
-    { &quot;id&quot;: &quot;heat_diagnosis&quot;, &quot;name&quot;: &quot;온열질환 진단비&quot;, &quot;target&quot;: &quot;all&quot;, &quot;amount&quot;: 150000,
-      &quot;condition&quot;: &quot;온열질환(T67) 진단 (연 1회)&quot;, &quot;codes&quot;: [&quot;T67&quot;], &quot;docs&quot;: [&quot;진단서 또는 소견서&quot;] },
-    { &quot;id&quot;: &quot;clinic_visit&quot;, &quot;name&quot;: &quot;의료기관 통원비&quot;, &quot;target&quot;: &quot;vulnerable&quot;, &quot;amount&quot;: 20000,
-      &quot;condition&quot;: &quot;기상특보 발령일에 진료 목적 방문 (1회당, 5회 한도)&quot;, &quot;codes&quot;: [],
-      &quot;docs&quot;: [&quot;진료확인서&quot;, &quot;방문건강사업대상 확인서 또는 임산부확인서&quot;] }
-  ],
-  &quot;source&quot;: &quot;https://www.gg.go.kr/gg_insure&quot;
+  &quot;sigungu&quot;: &quot;고양시&quot;, &quot;date&quot;: &quot;2026-08-05&quot;,
+  &quot;alerts&quot;: [], &quot;source&quot;: &quot;sample&quot;,
+  &quot;status&quot;: &quot;unknown&quot;, &quot;verified&quot;: false,
+  &quot;notice&quot;: &quot;기상청 실시간·과거 특보와 연결되지 않은 시연용 데이터입니다. 데이터가 없어도 특보가 없었다는 뜻은 아닙니다.&quot;
 }
 </code></pre>
-<p>보장 항목 id: <code>heat_diagnosis</code> 온열질환 진단비 15만 원 · <code>cold_diagnosis</code> 한랭질환 진단비 15만 원 · <code>infection_diagnosis</code> 특정 감염병 진단비 20만 원 · <code>disaster_injury</code> 기후재해 사고 위로금 30만 원 · <code>death</code> 사망위로금 300만 원 · <code>er_visit</code> 응급실 내원비 10만 원 · <code>heat_hospital</code>/<code>cold_hospital</code> 입원일당 10만 원(취약계층, 5일 한도) · <code>clinic_visit</code> 통원비 2만 원(취약계층, 5회 한도)</p>
-<h2>3. GET /api/alerts</h2>
-<p>시군의 기상특보(폭염·한파 등)를 조회합니다. 통원비·기후재해 위로금은 <strong>특보 발령일</strong>이어야 보장되므로 판정에 쓰입니다.</p>
+<p><code>sample_match</code>는 예시가 있다는 뜻이고, <code>unknown</code>은 자료를 확인할 수 없다는 뜻입니다. 모두 실제 특보 확인 결과가 아닙니다. 현재 응답은 <code>verified=false</code>이며, 일반 모드의 특보 의존 항목을 확정하는 데 사용하지 않습니다.</p>
+<h3>POST /api/doctor-card</h3>
+<p>필수: <code>weather</code> (<code>폭염</code>/<code>한파</code>/<code>기타</code>), <code>exposure</code> (빈 문자열 불가), <code>hours</code> (0 초과~24).
+선택: <code>symptoms</code> (string[]). 호환용 <code>alert_type</code>을 받아도 특보 발령을 단정해 쓰지 않습니다.</p>
+<pre><code class="language-json">{&quot;weather&quot;:&quot;한파&quot;, &quot;exposure&quot;:&quot;야외 산책&quot;, &quot;hours&quot;:1.5, &quot;symptoms&quot;:[&quot;손발 저림&quot;]}
+</code></pre>
+<p>응답 200: <code>title</code> (string), <code>lines</code> (입력한 상황 문장 배열), <code>request</code> (서류 발급 요청), <code>notice</code> (의사 판단·특정 진단코드 미요청 안내). 필수 입력 누락·범위 오류는 422입니다. 증상·활동·시간의 임의 기본값을 생성하지 않습니다.</p>
+<h3>GET /api/claim-channels</h3>
+<p>필수 쿼리·본문 없음. 응답 200은 2026년 공식 안내 기준의 접수 채널입니다.</p>
 <table>
 <thead>
 <tr>
-<th>쿼리</th>
-<th>타입</th>
-<th>필수</th>
-<th>설명</th>
+<th>응답 필드</th>
+<th>형식</th>
+<th>의미</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>sigungu</td>
+<td>insurer</td>
 <td>string</td>
-<td>아니오 (기본 <code>부천시</code>)</td>
-<td>시군 이름</td>
+<td>계약 보험사 안내</td>
 </tr>
 <tr>
-<td>on</td>
-<td>date (YYYY-MM-DD)</td>
-<td>아니오</td>
-<td>이 날짜에 발령 중인 특보만</td>
+<td>channels</td>
+<td>object[]</td>
+<td>type (카카오톡/이메일/팩스/우편), how (이용 방법)</td>
+</tr>
+<tr>
+<td>call_center</td>
+<td>string</td>
+<td>문의 전화</td>
+</tr>
+<tr>
+<td>payout</td>
+<td>string</td>
+<td>공식 안내의 처리 기간 설명. 개별 지급일 보장 아님</td>
+</tr>
+<tr>
+<td>source</td>
+<td>string</td>
+<td>공식 안내 URL</td>
 </tr>
 </tbody>
 </table>
-<p><strong>응답 200</strong> — <code>GET /api/alerts?sigungu=부천시&amp;on=2026-12-16</code></p>
-<pre><code class="language-json">{ &quot;sigungu&quot;: &quot;부천시&quot;, &quot;date&quot;: &quot;2026-12-16&quot;,
-  &quot;alerts&quot;: [ { &quot;sigungu&quot;: &quot;부천시&quot;, &quot;type&quot;: &quot;한파주의보&quot;, &quot;start&quot;: &quot;2026-12-15&quot;, &quot;end&quot;: &quot;2026-12-18&quot; } ],
-  &quot;source&quot;: &quot;sample&quot; }
-</code></pre>
-<blockquote>
-<p>1차 버전은 시연용 샘플 데이터(<code>source: "sample"</code>)입니다. 2차에서 기상청 특보 통보문 오픈API(기상자료개방포털·공공데이터포털)로 교체하며 응답 형식은 같습니다.</p>
-</blockquote>
-<h2>4. POST /api/eligibility</h2>
-<p>받을 수 있는 보험금, 항목별 근거, 필요한 서류, 청구 기한을 판정합니다. 규칙 기반이며 최종 지급 여부는 보험사 심사로 결정됩니다.</p>
-<p><strong>요청 본문</strong></p>
+<p>자동 접수는 수행하지 않습니다. 2025년 사고는 당시 약관과 접수처를 별도로 확인해야 합니다.</p>
+<div class="page-break"></div>
+
+<h2>3. POST /api/eligibility - 요청</h2>
+<p>진료·사고 조건으로 예상 보장과 확인 대기를 안내합니다. 형식 오류·필수값 누락은 FastAPI의 <code>detail</code> 배열을 포함한 422 응답입니다.</p>
 <table>
 <thead>
 <tr>
 <th>필드</th>
-<th>타입</th>
-<th>필수</th>
-<th>설명</th>
+<th>타입 / 기본값</th>
+<th>의미</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>event_date</td>
-<td>date</td>
-<td>예</td>
-<td>진료·사고 날짜</td>
+<td>date, 필수</td>
+<td>진료·사고일. 일반 모드 미래 날짜는 422</td>
 </tr>
 <tr>
 <td>sigungu</td>
-<td>string</td>
-<td>아니오 (기본 <code>부천시</code>)</td>
-<td>사고 시군 (특보 확인용)</td>
+<td>string / 부천시</td>
+<td>사고·진료 발생 시군. 거주지와 별도로 입력</td>
+</tr>
+<tr>
+<td>resident_on_event</td>
+<td>boolean 또는 null / null</td>
+<td>사고 당일 가입 대상 여부의 사용자 확인</td>
 </tr>
 <tr>
 <td>diagnosis_codes</td>
-<td>string[]</td>
-<td>아니오</td>
-<td>진단서·소견서의 질병코드 (예: <code>T67.0</code>)</td>
+<td>string[] / []</td>
+<td>T67, T67.0, T34.1 등. 공백 제거·대문자 정규화, 잘못된 형식은 422</td>
 </tr>
 <tr>
 <td>infection</td>
-<td>string</td>
-<td>아니오</td>
-<td>감염병 이름 (뎅기열, 말라리아 등 10종)</td>
+<td>string 또는 null</td>
+<td>안내된 특정 감염병 이름</td>
+</tr>
+<tr>
+<td>diagnosis_already_paid</td>
+<td>boolean / false</td>
+<td>입력한 온열·한랭 진단비의 보험기간 내 기지급 여부</td>
 </tr>
 <tr>
 <td>er_visit</td>
-<td>boolean</td>
-<td>아니오</td>
-<td>응급실 진료 여부</td>
+<td>boolean / false</td>
+<td>관련 응급실 진료 여부</td>
 </tr>
 <tr>
 <td>hospital_days</td>
-<td>integer ≥ 0</td>
-<td>아니오</td>
-<td>입원 일수</td>
-</tr>
-<tr>
-<td>clinic_visits_on_alert_days</td>
-<td>integer ≥ 0</td>
-<td>아니오</td>
-<td>특보 발령일 통원 횟수 (취약계층)</td>
-</tr>
-<tr>
-<td>disaster_injury_weeks</td>
-<td>integer ≥ 0</td>
-<td>아니오</td>
-<td>기후재해 사고 진단 주수</td>
-</tr>
-<tr>
-<td>death</td>
-<td>boolean</td>
-<td>아니오</td>
-<td>사망 여부 (유족 청구)</td>
-</tr>
-<tr>
-<td>age</td>
-<td>integer 0~130</td>
-<td>아니오</td>
-<td>나이 (미성년자 서류, 사망위로금 판정)</td>
+<td>integer &gt;= 0 / 0</td>
+<td>온열·한랭질환 입원 일수</td>
 </tr>
 <tr>
 <td>vulnerable</td>
-<td>boolean</td>
-<td>아니오</td>
-<td>기후취약계층 (방문건강관리사업 대상 또는 임산부)</td>
+<td>boolean / false</td>
+<td>방문건강관리사업 대상 또는 임산부</td>
+</tr>
+<tr>
+<td>clinic_visits_on_alert_days</td>
+<td>integer &gt;= 0 / 0</td>
+<td>특보일 통원 횟수. 각 날짜·지역의 실제 특보 확인 필요</td>
+</tr>
+<tr>
+<td>disaster_injury_weeks</td>
+<td>integer &gt;= 0 / 0</td>
+<td>기후재해 상해 진단 주수</td>
+</tr>
+<tr>
+<td>disaster_related</td>
+<td>boolean 또는 null / null</td>
+<td>해당 기상현상으로 인한 사고인지 사용자 확인</td>
+</tr>
+<tr>
+<td>death</td>
+<td>boolean / false</td>
+<td>관련 사망으로 인한 유족 청구</td>
+</tr>
+<tr>
+<td>age</td>
+<td>integer 0~130 또는 null</td>
+<td>사고 당시 나이</td>
+</tr>
+<tr>
+<td>demo_mode</td>
+<td>boolean / false</td>
+<td>샘플 특보·미래 사례를 허용하는 가상 시연. 응답에도 표시</td>
 </tr>
 </tbody>
 </table>
-<p><strong>요청 예시</strong></p>
-<pre><code class="language-json">{ &quot;event_date&quot;: &quot;2026-08-05&quot;, &quot;sigungu&quot;: &quot;부천시&quot;, &quot;diagnosis_codes&quot;: [&quot;T67.0&quot;], &quot;er_visit&quot;: true }
-</code></pre>
-<p><strong>응답 200</strong></p>
+<h3>일반 요청 예시</h3>
 <pre><code class="language-json">{
-  &quot;policy_year&quot;: &quot;2026&quot;,
-  &quot;eligible&quot;: true,
-  &quot;total_amount&quot;: 250000,
-  &quot;items&quot;: [
-    { &quot;id&quot;: &quot;heat_diagnosis&quot;, &quot;name&quot;: &quot;온열질환 진단비&quot;, &quot;unit_amount&quot;: 150000, &quot;count&quot;: 1, &quot;amount&quot;: 150000,
-      &quot;reason&quot;: &quot;진단서의 질병코드가 온열질환(T67)에 해당&quot;, &quot;docs&quot;: [&quot;진단서 또는 소견서&quot;] },
-    { &quot;id&quot;: &quot;er_visit&quot;, &quot;name&quot;: &quot;응급실 내원비&quot;, &quot;unit_amount&quot;: 100000, &quot;count&quot;: 1, &quot;amount&quot;: 100000,
-      &quot;reason&quot;: &quot;온열·한랭질환 또는 기후재해로 응급실 진료&quot;, &quot;docs&quot;: [&quot;응급실기록지&quot;, &quot;진단서 또는 소견서&quot;] }
-  ],
-  &quot;required_docs&quot;: [&quot;보험금 청구서&quot;, &quot;개인정보처리동의서&quot;, &quot;주민등록초본 (외국인: 국내거소신고사실증명서)&quot;,
-                    &quot;통장사본&quot;, &quot;진단서 또는 소견서&quot;, &quot;응급실기록지&quot;],
-  &quot;alerts_on_event_date&quot;: [ { &quot;sigungu&quot;: &quot;부천시&quot;, &quot;type&quot;: &quot;폭염경보&quot;, &quot;start&quot;: &quot;2026-08-01&quot;, &quot;end&quot;: &quot;2026-08-12&quot; } ],
-  &quot;claim_deadline&quot;: &quot;2029-08-05&quot;,
-  &quot;deadline_passed&quot;: false,
-  &quot;notes&quot;: [&quot;온열·한랭질환 진단비는 보험 기간 중 1회만 지급됩니다.&quot;],
-  &quot;disclaimer&quot;: &quot;예상 판정입니다. 최종 지급 여부와 금액은 보험사(메리츠화재) 서류 심사로 결정됩니다.&quot;
+  &quot;event_date&quot;: &quot;2026-08-05&quot;, &quot;sigungu&quot;: &quot;부천시&quot;,
+  &quot;resident_on_event&quot;: true,
+  &quot;diagnosis_codes&quot;: [&quot;T67.0&quot;], &quot;er_visit&quot;: true
 }
 </code></pre>
-<p><strong>판정 규칙 요약</strong></p>
+<p>예상 항목 합계는 <code>total_amount=250000</code>, 상태는 <code>estimated</code>, <code>demo_mode=false</code>입니다.
+특보가 필요 없는 진단비와 관련 응급실 보장은 입력 조건으로 안내할 수 있습니다.</p>
+<div class="page-break"></div>
+
+<h2>4. 판정 응답·운용 경계·검증</h2>
 <table>
 <thead>
 <tr>
-<th>조건</th>
-<th>결과</th>
+<th>응답 필드</th>
+<th>해석</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>사고일이 2026.4.11 ~ 2027.4.10</td>
-<td>2026 약관 적용</td>
+<td>policy_year / status</td>
+<td>약관 연도 / demo, needs_confirmation, estimated, not_covered, no_match</td>
 </tr>
 <tr>
-<td>사고일이 2025.4.11 ~ 2026.4.10</td>
-<td>2025 약관 적용 (진단비 10만 원), 나머지는 보험사 확인 안내</td>
+<td>eligible</td>
+<td>입력 조건으로 계산 가능한 예상 항목이 있는지. 지급 자격 확정 아님</td>
 </tr>
 <tr>
-<td>질병코드 T67</td>
-<td>온열질환 진단비</td>
+<td>items / pending_items</td>
+<td>예상 항목 / 추가 확인할 항목의 id·이름·이유. 대기는 미대상 확정이 아님</td>
 </tr>
 <tr>
-<td>질병코드 T33·T34·T35·T68·T69</td>
-<td>한랭질환 진단비</td>
+<td>total_amount</td>
+<td>items 합계. 확인 대기는 제외</td>
 </tr>
 <tr>
-<td>응급실 + (온열·한랭질환 또는 기후재해)</td>
-<td>응급실 내원비</td>
+<td>can_prepare_summary</td>
+<td>가입 대상·기간 조건상 준비 요약서를 만들 수 있는지</td>
 </tr>
 <tr>
-<td>특보 발령일 사고 + 4주 이상 진단 (취약계층 2주)</td>
-<td>기후재해 사고 위로금</td>
+<td>weather / demo_mode</td>
+<td>특보 출처·확인 상태 / 가상 시연 여부</td>
 </tr>
 <tr>
-<td>취약계층 + 입원</td>
-<td>입원일당 × 최대 5일</td>
+<td>alerts_on_event_date</td>
+<td>일반 모드는 빈 배열. 명시적 시연에서만 샘플 반환</td>
 </tr>
 <tr>
-<td>취약계층 + 특보 발령일 통원</td>
-<td>통원비 × 최대 5회</td>
+<td>required_docs</td>
+<td>현재 예상 항목에 필요한 서류</td>
 </tr>
 <tr>
-<td>사망 + 만 15세 이상</td>
-<td>사망위로금</td>
+<td>claim_deadline / deadline_passed</td>
+<td>사고일 + 3년의 계산상 기한 / 경과 여부</td>
 </tr>
 <tr>
-<td>사고일 + 3년</td>
-<td>청구 기한</td>
+<td>notes / disclaimer / policy_source</td>
+<td>가정·지원 범위·안내 문구 / 공식 출처</td>
 </tr>
 </tbody>
 </table>
-<p><strong>오류</strong>: 필드 형식이 틀리면 <code>422 Unprocessable Entity</code> (FastAPI 검증 오류 형식)</p>
-<h2>5. POST /api/doctor-card</h2>
-<p>진료 때 의사에게 보여줄 카드 문구를 만듭니다. <strong>노출 상황을 전달하고 청구용 서류 발급을 요청할 뿐, 특정 질병코드를 요청하지 않습니다</strong> (자동 테스트로 검증).</p>
-<table>
-<thead>
-<tr>
-<th>필드</th>
-<th>타입</th>
-<th>필수</th>
-<th>설명</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>weather</td>
-<td><code>폭염</code> | <code>한파</code></td>
-<td>아니오</td>
-<td>날씨</td>
-</tr>
-<tr>
-<td>exposure</td>
-<td>string</td>
-<td>아니오</td>
-<td>노출 상황 (예: 야외 작업)</td>
-</tr>
-<tr>
-<td>hours</td>
-<td>number 0~24</td>
-<td>아니오</td>
-<td>노출 시간</td>
-</tr>
-<tr>
-<td>symptoms</td>
-<td>string[]</td>
-<td>아니오</td>
-<td>증상</td>
-</tr>
-<tr>
-<td>alert_type</td>
-<td>string</td>
-<td>아니오</td>
-<td>당일 특보 (예: 한파주의보)</td>
-</tr>
-</tbody>
-</table>
-<p><strong>응답 200</strong></p>
-<pre><code class="language-json">{
-  &quot;title&quot;: &quot;진료 전에 보여주세요&quot;,
-  &quot;lines&quot;: [&quot;오늘 한파주의보 발령 중에 야외 작업을(를) 약 3시간 했습니다.&quot;, &quot;증상: 오한·떨림&quot;],
-  &quot;request&quot;: &quot;경기 기후보험 청구를 위해, 진료 후 질병명과 질병분류코드가 기재된 진단서(또는 소견서) 발급을 부탁드립니다.&quot;,
-  &quot;notice&quot;: &quot;이 카드는 노출 상황을 전달하기 위한 것입니다. 진단은 의사의 판단이며 특정 질병코드를 요청하지 않습니다.&quot;
-}
-</code></pre>
-<h2>6. GET /api/claim-channels</h2>
-<p>보험금 청구 접수 채널을 안내합니다 (경기도 공식 안내 기준).</p>
-<p><strong>응답 200 (일부)</strong></p>
-<pre><code class="language-json">{
-  &quot;insurer&quot;: &quot;메리츠화재 (경기도 계약 보험사)&quot;,
-  &quot;channels&quot;: [ { &quot;type&quot;: &quot;카카오톡&quot;, &quot;how&quot;: &quot;카카오톡에서 '경기 기후보험' 채널 친구추가 → 보상청구하기 → 서류 사진 업로드&quot; } ],
-  &quot;call_center&quot;: &quot;02-2078-4548&quot;,
-  &quot;payout&quot;: &quot;서류 심사 후 3일 이내 지급&quot;
-}
-</code></pre>
-<h2>2차 개발 예정 (최종 제출 전)</h2>
-<table>
-<thead>
-<tr>
-<th>기능</th>
-<th>내용</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>실제 특보 연동</td>
-<td><code>/api/alerts</code>를 기상청 특보 오픈API로 교체, 시군 단위 캐시</td>
-</tr>
-<tr>
-<td>특보 푸시</td>
-<td><code>/api/push/subscribe</code>: 시군만 받는 익명 구독 (Web Push)</td>
-</tr>
-<tr>
-<td>기관용 대시보드</td>
-<td><code>/api/org/cases</code>: 보건소·방문건강관리 담당자가 대상자 청구 진행 단계만 관리 (진단 내용·서류 원본은 저장하지 않음), 기관 토큰 인증</td>
-</tr>
-<tr>
-<td>기기 내 글자 인식</td>
-<td>진단서 사진에서 질병코드를 휴대폰 안에서 추출 (서버 전송 없음)</td>
-</tr>
-</tbody>
-</table></body></html>
+<h3>주요 처리 원칙</h3>
+<ul>
+<li>가입 대상이 아니라고 입력하거나 기한 경과·지원 기간 밖이면 금액을 합산하지 않습니다. 가입 대상 미확인은 조건부 예상만 제공하고 요약서는 보류합니다.</li>
+<li>실제 특보 미확인은 200과 확인 대기를 반환합니다. 시연에서도 샘플이 없으면 특보를 추정하지 않습니다.</li>
+<li>상해 위로금의 일반 4주·취약계층 2주 조건을 구분합니다. 응급실 보장 자체에는 4주 조건을 적용하지 않습니다.</li>
+<li>기지급 진단비는 제외합니다. 나이 없는 사망위로금은 확인 대기이며 남은 한도·병급은 보험사 확인이 필요합니다.</li>
+<li>2025년 사고는 온열·한랭 진단비만 안내하고 그 외 보장·접수처의 확인을 요청합니다.</li>
+</ul>
+<h3>가상 사례</h3>
+<p><code>demo_mode=true</code>, 2026.12.16 부천시 샘플 한파, 가입 대상·취약계층, T68, 응급실, 입원 2일, 별도 통원 1회, 나이 72를 가정하면 15만+10만+20만+2만=47만 원입니다. 실제 증빙·병급이 검증된 지급 확정액이 아닙니다. 화면 시연 모드는 개인 기록을 읽거나 저장하지 않습니다.</p>
+<h3>운용과 검증</h3>
+<ul>
+<li>현재 공개 안내·추정 API는 인증 없이 로컬 실행합니다. 기관 인증·실제 접수 API는 제공하지 않습니다. 운영 배포 시 허용 출처·요청 제한·로그 정책을 별도로 설정해야 합니다.</li>
+<li>서버 회귀 테스트: 프로젝트 루트 또는 backend에서 <code>python -m pytest -q</code> (33개).</li>
+<li>화면 상태 분리: <code>node --test tests/frontend-state.test.cjs</code> (7개).</li>
+<li>화면 6개·API 6개, 일반/시연·사람/진료 건 전환·카드·요약서 동작을 확인했습니다.</li>
+</ul></body></html>

@@ -1,0 +1,5 @@
+reportlab>=4.2,<6
+Markdown>=3.7,<4
+beautifulsoup4>=4.12,<5
+pypdf>=5,<7
+pypdfium2>=4,<6

@@ -1,5 +1,5 @@
 "use strict";
-// 받을권리 프론트엔드: 화면 6개(홈, 진료 카드, 보험금 확인, 결과, 청구서, 가족)를 해시 주소로 전환한다.
+// 청구리 프론트엔드: 화면 6개(홈, 진료 카드, 보험금 확인, 결과, 청구서, 가족)를 해시 주소로 전환한다.
 // 이름·연락처·계좌·가족 정보는 이 기기(localStorage)에만 저장하고 서버로 보내지 않는다.
 
 const params = new URLSearchParams(location.search);
@@ -7,8 +7,8 @@ const DEMO = params.has("demo");
 const API = window.API_BASE || "http://localhost:8000";
 
 const store = {
-  get(k, d) { try { const v = localStorage.getItem("badeul." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
-  set(k, v) { try { localStorage.setItem("badeul." + k, JSON.stringify(v)); } catch { /* 저장 못 해도 동작 */ } },
+  get(k, d) { try { const v = localStorage.getItem("cheonguri." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("cheonguri." + k, JSON.stringify(v)); } catch { /* 저장 못 해도 동작 */ } },
 };
 
 // 시연(?demo)에서는 한파주의보가 발령된 날로 가정한다
@@ -62,7 +62,7 @@ async function viewHome() {
         <p>지난 진료도 사고일부터 3년 안이면 청구할 수 있어요.</p></div>`;
   return `
     <h1>자동가입된 기후보험,<br>받을 권리까지 챙겨드려요</h1>
-    <p class="lead">경기도민이면 모두 가입돼 있지만, 보험금은 직접 청구해야 받을 수 있어요.</p>
+    <p class="lead">경기도민이면 모두 가입돼 있지만, 보험금은 직접 청구해야 받을 수 있어요. 날씨가 변하면 청구리가 먼저 알려드려요.</p>
     ${banner}
     <a class="btn primary" href="#card">병원 가기 전: 진료 카드 보여주기</a>
     <a class="btn ghost" href="#check">받을 수 있는 보험금 확인하기</a>

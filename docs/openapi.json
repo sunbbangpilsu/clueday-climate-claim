@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "받을권리 API",
+    "title": "청구리 API",
     "description": "경기 기후보험 보장 판정·서류 안내 API. 이름·주민번호·진단서 원본은 받지 않습니다.",
     "version": "0.1.0"
   },

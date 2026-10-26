@@ -49,5 +49,5 @@ def build(md_name, title):
 
 
 if __name__ == "__main__":
-    build("기획서.md", "받을권리 서비스 기획안")
-    build("API명세서.md", "받을권리 API 명세서")
+    build("기획서.md", "청구리 서비스 기획안")
+    build("API명세서.md", "청구리 API 명세서")

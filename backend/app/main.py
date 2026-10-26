@@ -1,4 +1,4 @@
-"""받을권리 API: 경기 기후보험 '받을 권리' 청구 도우미.
+"""청구리 API: 경기 기후보험 '받을 권리' 청구 도우미.
 
 실행: uvicorn app.main:app --reload   (backend 폴더에서)
 문서: http://localhost:8000/docs
@@ -17,7 +17,7 @@ from .coverage import CLAIM_CHANNELS, COVERAGES, INFECTIONS
 from .eligibility import evaluate
 
 app = FastAPI(
-    title="받을권리 API",
+    title="청구리 API",
     version="0.1.0",
     description="경기 기후보험 보장 판정·서류 안내 API. 이름·주민번호·진단서 원본은 받지 않습니다.",
 )
@@ -50,7 +50,7 @@ class DoctorCardRequest(BaseModel):
 
 @app.get("/api/health", tags=["시스템"], summary="서버 상태 확인")
 def health():
-    return {"status": "ok", "service": "받을권리", "version": app.version}
+    return {"status": "ok", "service": "청구리", "version": app.version}
 
 
 @app.get("/api/coverages", tags=["보장"], summary="2026 경기 기후보험 보장 항목 목록")

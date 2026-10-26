@@ -1,4 +1,4 @@
-# 받을권리 API 명세서
+# 청구리 API 명세서
 
 경기 기후보험 '받을 권리' 청구 도우미의 백엔드 API입니다.
 
@@ -38,7 +38,7 @@
 
 **응답 200**
 ```json
-{ "status": "ok", "service": "받을권리", "version": "0.1.0" }
+{ "status": "ok", "service": "청구리", "version": "0.1.0" }
 ```
 
 ## 2. GET /api/coverages
